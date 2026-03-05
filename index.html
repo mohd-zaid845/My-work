@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeTrack – Safety Tracking App</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>" />
+</head>
+<body>
+  <!-- ── Auth Screen ── -->
+  <div id="auth-screen" class="screen">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <span class="logo-icon">🛡️</span>
+        <h1>SafeTrack</h1>
+        <p class="tagline">Your personal safety companion</p>
+      </div>
+
+      <!-- Login Form -->
+      <div id="login-form" class="auth-form active">
+        <h2>Sign In</h2>
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <p id="login-error" class="form-error hidden"></p>
+        <button id="btn-login" class="btn btn-primary btn-full">Sign In</button>
+        <p class="auth-switch">Don't have an account? <a href="#" id="show-register">Create one</a></p>
+      </div>
+
+      <!-- Register Form -->
+      <div id="register-form" class="auth-form">
+        <h2>Create Account</h2>
+        <div class="form-group">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" placeholder="Jane Doe" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="reg-phone">Phone Number</label>
+          <input type="tel" id="reg-phone" placeholder="+1 555 000 0000" autocomplete="tel" />
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" placeholder="Min. 8 characters" autocomplete="new-password" />
+        </div>
+        <p id="reg-error" class="form-error hidden"></p>
+        <button id="btn-register" class="btn btn-primary btn-full">Create Account</button>
+        <p class="auth-switch">Already have an account? <a href="#" id="show-login">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── App Screen ── -->
+  <div id="app-screen" class="screen hidden">
+    <!-- Header / Navbar -->
+    <header class="app-header">
+      <div class="header-brand">
+        <span class="logo-icon-sm">🛡️</span>
+        <span class="brand-name">SafeTrack</span>
+      </div>
+      <nav class="header-nav">
+        <button class="nav-tab active" data-tab="dashboard">
+          <span class="nav-icon">🏠</span><span>Dashboard</span>
+        </button>
+        <button class="nav-tab" data-tab="checkin">
+          <span class="nav-icon">✅</span><span>Check-In</span>
+        </button>
+        <button class="nav-tab" data-tab="contacts">
+          <span class="nav-icon">👥</span><span>Contacts</span>
+        </button>
+        <button class="nav-tab" data-tab="history">
+          <span class="nav-icon">📋</span><span>History</span>
+        </button>
+      </nav>
+      <div class="header-user">
+        <span id="user-name-display" class="user-name"></span>
+        <button id="btn-logout" class="btn btn-ghost btn-sm" title="Sign out">↩ Logout</button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+
+      <!-- ── Dashboard Tab ── -->
+      <section id="tab-dashboard" class="tab-panel active">
+        <div class="page-header">
+          <h2>Dashboard</h2>
+          <p id="dashboard-greeting" class="subtitle"></p>
+        </div>
+
+        <!-- Safety Status Card -->
+        <div class="card status-card" id="status-card">
+          <div class="status-indicator" id="status-indicator">
+            <div class="status-pulse"></div>
+            <span class="status-icon" id="status-icon">🟢</span>
+          </div>
+          <div class="status-info">
+            <h3 id="status-label">Safe</h3>
+            <p id="status-description">You're currently marked as safe.</p>
+            <p id="last-checkin-time" class="status-meta"></p>
+          </div>
+          <div class="status-actions">
+            <button id="btn-mark-safe" class="btn btn-success">Mark Safe</button>
+            <button id="btn-mark-away" class="btn btn-warning">Check Out</button>
+          </div>
+        </div>
+
+        <!-- SOS Button -->
+        <div class="card sos-card">
+          <div class="sos-content">
+            <div>
+              <h3>🚨 Emergency SOS</h3>
+              <p>Instantly alert all your emergency contacts with your location.</p>
+            </div>
+            <button id="btn-sos" class="btn-sos">SOS</button>
+          </div>
+          <div id="sos-countdown" class="sos-countdown hidden">
+            <div class="countdown-bar">
+              <div id="countdown-fill" class="countdown-fill"></div>
+            </div>
+            <div class="countdown-text">
+              Sending SOS in <strong id="countdown-seconds">3</strong>s…
+              <button id="btn-cancel-sos" class="btn btn-ghost btn-sm">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-icon">📞</span>
+            <div>
+              <p class="stat-value" id="stat-contacts">0</p>
+              <p class="stat-label">Emergency Contacts</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">✅</span>
+            <div>
+              <p class="stat-value" id="stat-checkins">0</p>
+              <p class="stat-label">Check-ins Today</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🚨</span>
+            <div>
+              <p class="stat-value" id="stat-sos">0</p>
+              <p class="stat-label">SOS Alerts Sent</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">📍</span>
+            <div>
+              <p class="stat-value" id="stat-location">—</p>
+              <p class="stat-label">Last Location</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Recent Activity</h3>
+          </div>
+          <ul id="recent-activity" class="activity-list">
+            <li class="activity-empty">No recent activity yet.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ── Check-In Tab ── -->
+      <section id="tab-checkin" class="tab-panel">
+        <div class="page-header">
+          <h2>Safety Check-In</h2>
+          <p class="subtitle">Let your contacts know you're safe.</p>
+        </div>
+
+        <!-- Location Card -->
+        <div class="card">
+          <div class="card-header">
+            <h3>📍 Current Location</h3>
+            <button id="btn-get-location" class="btn btn-outline btn-sm">Detect Location</button>
+          </div>
+          <div id="location-display" class="location-display">
+            <p id="location-text" class="location-text muted">Location not detected yet.</p>
+            <p id="location-coords" class="location-coords muted"></p>
+          </div>
+        </div>
+
+        <!-- Check-In Form -->
+        <div class="card">
+          <div class="card-header">
+            <h3>✅ Log a Check-In</h3>
+          </div>
+          <div class="form-group">
+            <label for="checkin-status">Status</label>
+            <select id="checkin-status">
+              <option value="safe">🟢 Safe</option>
+              <option value="caution">🟡 Needs Attention</option>
+              <option value="alert">🔴 Alert</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="checkin-note">Note (optional)</label>
+            <textarea id="checkin-note" rows="3" placeholder="Add a note about your current situation…"></textarea>
+          </div>
+          <div class="checkin-recipients">
+            <label>Notify contacts</label>
+            <div id="contact-checkboxes" class="contact-checkboxes">
+              <p class="muted">No contacts added yet. <a href="#" data-tab="contacts">Add contacts →</a></p>
+            </div>
+          </div>
+          <button id="btn-submit-checkin" class="btn btn-primary btn-full">Submit Check-In</button>
+          <p id="checkin-success" class="form-success hidden">✅ Check-in submitted successfully!</p>
+        </div>
+
+        <!-- Scheduled Check-Ins -->
+        <div class="card">
+          <div class="card-header">
+            <h3>⏰ Scheduled Check-Ins</h3>
+            <span class="badge badge-info">New</span>
+          </div>
+          <p class="muted mb-1">Set automatic reminders to check in at regular intervals.</p>
+          <div class="schedule-form">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="schedule-interval">Interval</label>
+                <select id="schedule-interval">
+                  <option value="15">Every 15 minutes</option>
+                  <option value="30" selected>Every 30 minutes</option>
+                  <option value="60">Every hour</option>
+                  <option value="120">Every 2 hours</option>
+                  <option value="240">Every 4 hours</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label>&nbsp;</label>
+                <button id="btn-schedule-toggle" class="btn btn-outline btn-full">Enable Reminders</button>
+              </div>
+            </div>
+            <p id="schedule-status" class="muted"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Contacts Tab ── -->
+      <section id="tab-contacts" class="tab-panel">
+        <div class="page-header">
+          <h2>Emergency Contacts</h2>
+          <p class="subtitle">People to notify in an emergency.</p>
+        </div>
+
+        <!-- Add Contact Form -->
+        <div class="card">
+          <div class="card-header">
+            <h3>➕ Add Contact</h3>
+          </div>
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="contact-name">Name</label>
+              <input type="text" id="contact-name" placeholder="Jane Doe" />
+            </div>
+            <div class="form-group flex-1">
+              <label for="contact-relation">Relationship</label>
+              <select id="contact-relation">
+                <option value="family">Family</option>
+                <option value="friend">Friend</option>
+                <option value="colleague">Colleague</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="contact-phone">Phone</label>
+              <input type="tel" id="contact-phone" placeholder="+1 555 000 0000" />
+            </div>
+            <div class="form-group flex-1">
+              <label for="contact-email">Email</label>
+              <input type="email" id="contact-email" placeholder="jane@example.com" />
+            </div>
+          </div>
+          <p id="contact-error" class="form-error hidden"></p>
+          <button id="btn-add-contact" class="btn btn-primary">Add Contact</button>
+        </div>
+
+        <!-- Contacts List -->
+        <div class="card">
+          <div class="card-header">
+            <h3>👥 My Contacts</h3>
+            <span id="contacts-count" class="badge badge-primary">0</span>
+          </div>
+          <ul id="contacts-list" class="contacts-list">
+            <li class="contacts-empty">No emergency contacts yet. Add one above.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ── History Tab ── -->
+      <section id="tab-history" class="tab-panel">
+        <div class="page-header">
+          <h2>History</h2>
+          <p class="subtitle">All your safety events and check-ins.</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="history-filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="checkin">Check-Ins</button>
+          <button class="filter-btn" data-filter="sos">SOS Alerts</button>
+          <button class="filter-btn" data-filter="status">Status Changes</button>
+        </div>
+
+        <div id="history-list" class="history-list">
+          <div class="history-empty">No history yet. Start checking in to see your activity here.</div>
+        </div>
+
+        <div class="card mt-2">
+          <div class="card-header">
+            <h3>⚠️ Data Management</h3>
+          </div>
+          <p class="muted mb-1">Clear your history or export your data.</p>
+          <div class="btn-group">
+            <button id="btn-export" class="btn btn-outline">📥 Export Data</button>
+            <button id="btn-clear-history" class="btn btn-danger-outline">🗑️ Clear History</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Mobile bottom nav -->
+    <nav class="mobile-nav">
+      <button class="mobile-nav-tab active" data-tab="dashboard">
+        <span>🏠</span><span>Home</span>
+      </button>
+      <button class="mobile-nav-tab" data-tab="checkin">
+        <span>✅</span><span>Check-In</span>
+      </button>
+      <button class="mobile-nav-tab" data-tab="contacts">
+        <span>👥</span><span>Contacts</span>
+      </button>
+      <button class="mobile-nav-tab" data-tab="history">
+        <span>📋</span><span>History</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ── Toast Notification ── -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- ── Confirm Modal ── -->
+  <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 id="modal-title"></h3>
+      <p id="modal-body"></p>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn btn-ghost">Cancel</button>
+        <button id="modal-confirm" class="btn btn-danger">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/contacts.js"></script>
+  <script src="js/alerts.js"></script>
+  <script src="js/checkin.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
